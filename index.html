@@ -40,262 +40,132 @@
     align-items: baseline;
     gap: 16px;
   }
-
-  header h1 {
-    font-size: 22px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-    color: var(--text);
-  }
-
+  header h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
   header span {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--accent);
-    background: rgba(124,106,247,0.12);
-    padding: 3px 8px;
-    border-radius: 4px;
-    border: 1px solid rgba(124,106,247,0.25);
+    font-family: var(--mono); font-size: 11px; color: var(--accent);
+    background: rgba(124,106,247,0.12); padding: 3px 8px;
+    border-radius: 4px; border: 1px solid rgba(124,106,247,0.25);
   }
 
   .layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    max-width: 1400px;
-    margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 20px; max-width: 1400px; margin: 0 auto;
   }
 
-  .panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    overflow: hidden;
-  }
-
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
   .panel-header {
-    padding: 12px 16px;
-    background: var(--surface2);
-    border-bottom: 1px solid var(--border);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--muted);
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    padding: 12px 16px; background: var(--surface2); border-bottom: 1px solid var(--border);
+    font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--muted); display: flex; align-items: center; gap: 8px;
   }
-
-  .panel-header .dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--accent);
-  }
-
+  .panel-header .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
   .panel-body { padding: 16px; }
 
-  /* Formula editor */
-  #formula {
-    width: 100%;
-    min-height: 180px;
-    background: #0d0d14;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--accent2);
-    font-family: var(--mono);
-    font-size: 13px;
-    line-height: 1.7;
-    padding: 14px;
-    resize: vertical;
-    outline: none;
+  /* ── Code Editor ── */
+  .editor-toolbar { display: flex; gap: 8px; margin-bottom: 8px; }
+
+  .editor-wrap {
+    position: relative;
+    border: 1px solid var(--border); border-radius: 6px;
+    overflow: hidden; background: #0d0d14;
     transition: border-color 0.2s;
-    tab-size: 2;
+  }
+  .editor-wrap:focus-within { border-color: var(--accent); }
+
+  #formula-highlight {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    padding: 14px; font-family: var(--mono); font-size: 13px; line-height: 1.7;
+    white-space: pre-wrap; word-break: break-word;
+    pointer-events: none; overflow: hidden; color: transparent;
   }
 
-  #formula:focus { border-color: var(--accent); }
-
-  /* Table editor */
-  .table-controls {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 12px;
+  #formula {
+    position: relative; display: block; width: 100%; min-height: 200px;
+    background: transparent; border: none;
+    caret-color: var(--text); color: rgba(232,232,240,0.12);
+    font-family: var(--mono); font-size: 13px; line-height: 1.7;
+    padding: 14px; resize: vertical; outline: none;
+    tab-size: 2; white-space: pre-wrap; word-break: break-word;
   }
 
+  .tok-fn    { color: #7c6af7; font-weight: 600; }
+  .tok-kw    { color: #f75a5a; font-weight: 600; }
+  .tok-col   { color: #f7a26a; }
+  .tok-str   { color: #5af78e; }
+  .tok-num   { color: #6af7f7; }
+  .tok-op    { color: #f7e26a; }
+  .tok-paren { color: #6b6b85; }
+  .tok-plain { color: #e8e8f0; }
+
+  /* ── Buttons ── */
   button {
-    font-family: var(--sans);
-    font-size: 12px;
-    font-weight: 600;
-    padding: 7px 14px;
-    border-radius: 5px;
-    border: 1px solid var(--border);
-    cursor: pointer;
-    background: var(--surface2);
-    color: var(--text);
-    transition: all 0.15s;
-    letter-spacing: 0.3px;
+    font-family: var(--sans); font-size: 12px; font-weight: 600;
+    padding: 7px 14px; border-radius: 5px; border: 1px solid var(--border);
+    cursor: pointer; background: var(--surface2); color: var(--text);
+    transition: all 0.15s; letter-spacing: 0.3px; white-space: nowrap;
   }
-
   button:hover { border-color: var(--accent); color: var(--accent); }
-
-  button.primary {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: white;
-  }
-
+  button.primary { background: var(--accent); border-color: var(--accent); color: white; }
   button.primary:hover { background: #6a58e0; border-color: #6a58e0; color: white; }
+  button.danger:hover { border-color: var(--red); color: var(--red); }
+
+  /* ── Table ── */
+  .table-controls { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; }
+  .ctrl-sep { width: 1px; height: 20px; background: var(--border); margin: 0 2px; }
 
   .table-wrapper {
-    overflow-x: auto;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    max-height: 280px;
-    overflow-y: auto;
+    overflow-x: auto; border: 1px solid var(--border);
+    border-radius: 6px; max-height: 280px; overflow-y: auto;
   }
-
-  table {
-    border-collapse: collapse;
-    width: 100%;
-    font-family: var(--mono);
-    font-size: 12px;
-  }
-
+  table { border-collapse: collapse; width: 100%; font-family: var(--mono); font-size: 12px; }
   th {
-    background: var(--surface2);
-    padding: 0;
-    border: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 2;
+    background: var(--surface2); padding: 0; border: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 2;
   }
-
   th input {
-    width: 100%;
-    background: transparent;
-    border: none;
-    color: var(--accent);
-    font-family: var(--mono);
-    font-size: 12px;
-    font-weight: 600;
-    padding: 8px 10px;
-    outline: none;
-    text-align: center;
+    width: 100%; background: transparent; border: none;
+    color: var(--accent); font-family: var(--mono); font-size: 12px;
+    font-weight: 600; padding: 8px 10px; outline: none; text-align: center;
   }
-
-  td {
-    border: 1px solid var(--border);
-    padding: 0;
-  }
-
+  td { border: 1px solid var(--border); padding: 0; }
   td input {
-    width: 100%;
-    background: transparent;
-    border: none;
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 12px;
-    padding: 7px 10px;
-    outline: none;
+    width: 100%; background: transparent; border: none;
+    color: var(--text); font-family: var(--mono); font-size: 12px;
+    padding: 7px 10px; outline: none;
   }
-
-  td input:focus, th input:focus {
-    background: rgba(124,106,247,0.08);
-  }
-
+  td input:focus, th input:focus { background: rgba(124,106,247,0.08); }
   tr:hover td { background: rgba(255,255,255,0.02); }
-
-  td.del-col {
-    width: 32px;
-    text-align: center;
-  }
-
+  td.del-col { width: 32px; text-align: center; }
   td.del-col button {
-    padding: 2px 6px;
-    font-size: 10px;
-    border-color: transparent;
-    background: transparent;
-    color: var(--muted);
+    padding: 2px 6px; font-size: 10px;
+    border-color: transparent; background: transparent; color: var(--muted);
   }
-
   td.del-col button:hover { color: var(--red); border-color: transparent; }
 
-  /* Run button */
-  .run-row {
-    margin-top: 16px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-  }
+  .run-row { margin-top: 16px; display: flex; gap: 10px; align-items: center; }
 
-  /* Output */
-  .output-full {
-    grid-column: 1 / -1;
-  }
-
-  #output-table-wrap {
-    overflow-x: auto;
-  }
-
-  #output-table-wrap table th {
-    background: rgba(124,106,247,0.15);
-  }
-
-  #output-table-wrap table th input {
-    color: var(--accent);
-  }
-
+  /* ── Output ── */
+  .output-full { grid-column: 1 / -1; }
+  #output-table-wrap { overflow-x: auto; }
+  #output-table-wrap table th { background: rgba(124,106,247,0.15); }
+  #output-table-wrap table th input { color: var(--accent); }
   .result-cell {
-    font-family: var(--mono);
-    font-size: 12px;
-    padding: 7px 10px;
-    border: 1px solid var(--border);
-    color: var(--green);
+    font-family: var(--mono); font-size: 12px;
+    padding: 7px 10px; border: 1px solid var(--border); color: var(--green);
   }
-
   .result-cell.err { color: var(--red); }
-
   .error-banner {
-    background: rgba(247,90,90,0.1);
-    border: 1px solid rgba(247,90,90,0.3);
-    border-radius: 6px;
-    padding: 12px 14px;
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--red);
-    white-space: pre-wrap;
+    background: rgba(247,90,90,0.1); border: 1px solid rgba(247,90,90,0.3);
+    border-radius: 6px; padding: 12px 14px;
+    font-family: var(--mono); font-size: 12px; color: var(--red); white-space: pre-wrap;
   }
-
-  .empty-state {
-    text-align: center;
-    padding: 40px;
-    color: var(--muted);
-    font-size: 13px;
-  }
-
-  .hint {
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 8px;
-    font-family: var(--mono);
-    line-height: 1.6;
-  }
-
-  .hint code {
-    color: var(--accent2);
-    background: rgba(247,162,106,0.1);
-    padding: 1px 5px;
-    border-radius: 3px;
-  }
-
+  .empty-state { text-align: center; padding: 40px; color: var(--muted); font-size: 13px; }
+  .hint { font-size: 11px; color: var(--muted); margin-top: 8px; font-family: var(--mono); line-height: 1.6; }
+  .hint code { color: var(--accent2); background: rgba(247,162,106,0.1); padding: 1px 5px; border-radius: 3px; }
   .badge {
-    font-size: 10px;
-    padding: 2px 6px;
-    border-radius: 3px;
-    background: rgba(90,247,142,0.1);
-    color: var(--green);
-    border: 1px solid rgba(90,247,142,0.2);
-    font-family: var(--mono);
+    font-size: 10px; padding: 2px 6px; border-radius: 3px;
+    background: rgba(90,247,142,0.1); color: var(--green);
+    border: 1px solid rgba(90,247,142,0.2); font-family: var(--mono);
   }
 </style>
 </head>
@@ -308,38 +178,39 @@
 
 <div class="layout">
 
-  <!-- Formula Panel -->
   <div class="panel">
     <div class="panel-header"><div class="dot"></div>Calculated Field</div>
     <div class="panel-body">
-      <textarea id="formula" spellcheck="false" placeholder="Enter your QuickSight calculated field formula here...
-
-Example:
-ifelse(
-  extract('HH', {timestamp}) >= 8,
-  'morning',
-  'night'
-)"></textarea>
+      <div class="editor-toolbar">
+        <button onclick="formatFormula()" title="Auto-indent">⇥ Format</button>
+        <button onclick="clearFormula()">✕ Clear</button>
+      </div>
+      <div class="editor-wrap">
+        <div id="formula-highlight" aria-hidden="true"></div>
+        <textarea id="formula" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"></textarea>
+      </div>
       <div class="hint">
-        Supported: <code>ifelse</code> <code>truncDate</code> <code>addDateTime</code> <code>dateDiff</code> <code>extract</code> <code>minOver</code> <code>maxOver</code> <code>min</code> <code>max</code> <code>toString</code> <code>parseInt</code> <code>parseDecimal</code><br>
-        Reference columns with <code>{columnName}</code>
+        <code>{col}</code> for columns &nbsp;·&nbsp;
+        Fns: <code>ifelse</code> <code>truncDate</code> <code>addDateTime</code> <code>dateDiff</code> <code>extract</code> <code>minOver</code> <code>maxOver</code> <code>isNull</code><br>
+        <code>⌘/Ctrl+Enter</code> to run
       </div>
     </div>
   </div>
 
-  <!-- Table Panel -->
   <div class="panel">
     <div class="panel-header"><div class="dot" style="background:var(--accent2)"></div>Sample Data</div>
     <div class="panel-body">
       <div class="table-controls">
-        <button onclick="addCol()">+ Column</button>
+        <button onclick="addCol()">+ Col</button>
+        <button class="danger" onclick="removeLastCol()">− Col</button>
+        <div class="ctrl-sep"></div>
         <button onclick="addRow()">+ Row</button>
+        <button class="danger" onclick="removeLastRow()">− Row</button>
+        <div class="ctrl-sep"></div>
         <button onclick="clearTable()">Clear</button>
       </div>
-      <div class="table-wrapper">
-        <table id="data-table"></table>
-      </div>
-      <div class="hint">First row = column names. Use ISO dates: <code>2024-01-15 08:30:00</code></div>
+      <div class="table-wrapper"><table id="data-table"></table></div>
+      <div class="hint">ISO dates: <code>2024-01-15 08:30:00</code></div>
       <div class="run-row">
         <button class="primary" onclick="runFormula()">▶ Run Formula</button>
         <span id="run-status"></span>
@@ -347,7 +218,6 @@ ifelse(
     </div>
   </div>
 
-  <!-- Output Panel -->
   <div class="panel output-full">
     <div class="panel-header"><div class="dot" style="background:var(--green)"></div>Output</div>
     <div class="panel-body" id="output-body">
@@ -358,78 +228,177 @@ ifelse(
 </div>
 
 <script>
-// ─── Table State ───────────────────────────────────────────────────────────────
-let cols = ['timestamp', 'is_surplus', 'day_only'];
+// ── Defaults ──────────────────────────────────────────────────────────────────
+const DEFAULT_FORMULA =
+`ifelse(
+  {is_active} = 1 AND extract('HH', {event_time}) >= 9,
+  {score} * 2,
+  {score}
+)`;
+
+let cols = ['event_time', 'is_active', 'score', 'label'];
 let rows = [
-  ['2024-01-15 06:00:00', '0', '2024-01-15'],
-  ['2024-01-15 08:00:00', '1', '2024-01-15'],
-  ['2024-01-15 10:00:00', '1', '2024-01-15'],
-  ['2024-01-15 13:00:00', '1', '2024-01-15'],
-  ['2024-01-15 15:00:00', '0', '2024-01-15'],
+  ['2024-03-01 07:45:00', '1', '50',  'morning'],
+  ['2024-03-01 09:00:00', '1', '80',  'peak'],
+  ['2024-03-01 11:30:00', '0', '60',  'peak'],
+  ['2024-03-01 14:00:00', '1', '40',  'afternoon'],
+  ['2024-03-01 17:00:00', '1', '90',  'evening'],
 ];
+
+// ── Table ─────────────────────────────────────────────────────────────────────
+function syncDOM() {
+  const t = document.getElementById('data-table');
+  t.querySelectorAll('thead input').forEach((inp, i) => { if (i < cols.length) cols[i] = inp.value; });
+  t.querySelectorAll('tbody tr').forEach((tr, ri) => {
+    tr.querySelectorAll('td input').forEach((inp, ci) => { if (rows[ri] && ci < cols.length) rows[ri][ci] = inp.value; });
+  });
+}
 
 function renderTable() {
   const t = document.getElementById('data-table');
   t.innerHTML = '';
-
-  // Header
-  const thead = t.createTHead();
-  const hr = thead.insertRow();
+  const hr = t.createTHead().insertRow();
   cols.forEach((c, ci) => {
     const th = document.createElement('th');
     const inp = document.createElement('input');
-    inp.value = c;
-    inp.placeholder = 'col' + ci;
+    inp.value = c; inp.placeholder = 'col' + ci;
     inp.oninput = e => { cols[ci] = e.target.value; };
-    th.appendChild(inp);
-    hr.appendChild(th);
+    th.appendChild(inp); hr.appendChild(th);
   });
-  // Delete col header
-  const thd = document.createElement('th');
-  thd.style.width = '32px';
-  hr.appendChild(thd);
+  hr.appendChild(document.createElement('th')).style.width = '32px';
 
-  // Body
-  const tbody = t.createTBody();
+  const tb = t.createTBody();
   rows.forEach((row, ri) => {
-    const tr = tbody.insertRow();
+    const tr = tb.insertRow();
     cols.forEach((_, ci) => {
       const td = tr.insertCell();
       const inp = document.createElement('input');
-      inp.value = row[ci] || '';
-      inp.placeholder = '—';
+      inp.value = row[ci] ?? ''; inp.placeholder = '—';
       inp.oninput = e => { rows[ri][ci] = e.target.value; };
       td.appendChild(inp);
     });
-    // Delete row
-    const tdel = tr.insertCell();
-    tdel.className = 'del-col';
-    const btn = document.createElement('button');
-    btn.textContent = '✕';
-    btn.onclick = () => { rows.splice(ri, 1); renderTable(); };
+    const tdel = tr.insertCell(); tdel.className = 'del-col';
+    const btn = document.createElement('button'); btn.textContent = '✕';
+    btn.onclick = () => { syncDOM(); rows.splice(ri, 1); renderTable(); };
     tdel.appendChild(btn);
   });
 }
 
-function addCol() {
-  cols.push('col' + cols.length);
-  rows.forEach(r => r.push(''));
-  renderTable();
+function addCol()        { syncDOM(); cols.push('col' + cols.length); rows.forEach(r => r.push('')); renderTable(); }
+function removeLastCol() { if (cols.length <= 1) return; syncDOM(); cols.pop(); rows.forEach(r => r.pop()); renderTable(); }
+function addRow()        { syncDOM(); rows.push(new Array(cols.length).fill('')); renderTable(); }
+function removeLastRow() { if (rows.length <= 1) return; syncDOM(); rows.pop(); renderTable(); }
+function clearTable()    { cols = ['col0']; rows = [['']]; renderTable(); }
+
+// ── Syntax Highlight ──────────────────────────────────────────────────────────
+const FNS = new Set(['ifelse','truncdate','adddatetime','datediff','extract','minover','maxover',
+  'min','max','tostring','parseinteger','parseint','parsedecimal','parsefloat',
+  'abs','ceil','floor','round','isnull','isnotnull','coalesce','concat','pre_agg']);
+const KWS = new Set(['and','or','not','null','true','false']);
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function addRow() {
-  rows.push(new Array(cols.length).fill(''));
-  renderTable();
+function highlight(text) {
+  let out = '', i = 0;
+  while (i < text.length) {
+    if (text[i] === '\n') { out += '\n'; i++; continue; }
+    if (text[i] === "'") {
+      let s = "'"; i++;
+      while (i < text.length && text[i] !== "'") s += text[i++];
+      s += "'"; i++;
+      out += `<span class="tok-str">${esc(s)}</span>`; continue;
+    }
+    if (text[i] === '{') {
+      let s = '{'; i++;
+      while (i < text.length && text[i] !== '}') s += text[i++];
+      s += '}'; i++;
+      out += `<span class="tok-col">${esc(s)}</span>`; continue;
+    }
+    if (text[i] === '[') {
+      let s = '['; i++;
+      while (i < text.length && text[i] !== ']') s += text[i++];
+      s += ']'; i++;
+      out += `<span class="tok-col">${esc(s)}</span>`; continue;
+    }
+    if (/\d/.test(text[i])) {
+      let s = '';
+      while (i < text.length && /[\d.]/.test(text[i])) s += text[i++];
+      out += `<span class="tok-num">${esc(s)}</span>`; continue;
+    }
+    if (/[a-zA-Z_]/.test(text[i])) {
+      let s = '';
+      while (i < text.length && /[a-zA-Z0-9_]/.test(text[i])) s += text[i++];
+      let j = i; while (j < text.length && text[j] === ' ') j++;
+      const isCall = text[j] === '(';
+      const sl = s.toLowerCase();
+      if (isCall && FNS.has(sl))  out += `<span class="tok-fn">${esc(s)}</span>`;
+      else if (KWS.has(sl))       out += `<span class="tok-kw">${esc(s)}</span>`;
+      else                         out += `<span class="tok-plain">${esc(s)}</span>`;
+      continue;
+    }
+    if (/[=<>!+\-*\/]/.test(text[i])) {
+      let s = text[i++];
+      if (i < text.length && text[i] === '=' && /[<>!]/.test(s)) s += text[i++];
+      out += `<span class="tok-op">${esc(s)}</span>`; continue;
+    }
+    if (/[(),]/.test(text[i])) { out += `<span class="tok-paren">${esc(text[i])}</span>`; i++; continue; }
+    out += esc(text[i++]);
+  }
+  out += '\n';
+  return out;
 }
 
-function clearTable() {
-  cols = ['col0'];
-  rows = [['']];
-  renderTable();
+function updateHighlight() {
+  const ta = document.getElementById('formula');
+  const hl = document.getElementById('formula-highlight');
+  hl.innerHTML = highlight(ta.value);
+  hl.scrollTop = ta.scrollTop;
 }
 
-// ─── Formula Parser / Evaluator ────────────────────────────────────────────────
+// ── Format ────────────────────────────────────────────────────────────────────
+function formatFormula() {
+  const ta = document.getElementById('formula');
+  let text = ta.value, out = '', indent = 0, i = 0, inStr = false;
+  while (i < text.length) {
+    const ch = text[i];
+    if (ch === "'" && !inStr) { inStr = true; out += ch; i++; continue; }
+    if (ch === "'" && inStr)  { inStr = false; out += ch; i++; continue; }
+    if (inStr) { out += ch; i++; continue; }
+    if (ch === '(') {
+      indent++;
+      out += '(\n' + '  '.repeat(indent);
+      i++; while (i < text.length && /\s/.test(text[i])) i++;
+      continue;
+    }
+    if (ch === ')') {
+      indent = Math.max(0, indent - 1);
+      out = out.trimEnd();
+      out += '\n' + '  '.repeat(indent) + ')';
+      i++; continue;
+    }
+    if (ch === ',') {
+      out = out.trimEnd();
+      out += ',\n' + '  '.repeat(indent);
+      i++; while (i < text.length && /[ \t]/.test(text[i])) i++;
+      continue;
+    }
+    if (ch === '\n') {
+      i++; while (i < text.length && /[ \t\n]/.test(text[i])) i++;
+      if (i < text.length && text[i] !== ')' && text[i] !== ',') out += '\n' + '  '.repeat(indent);
+      continue;
+    }
+    if (/[ \t]/.test(ch)) { out += ' '; i++; continue; }
+    out += ch; i++;
+  }
+  ta.value = out.trim();
+  updateHighlight();
+}
 
+function clearFormula() { document.getElementById('formula').value = ''; updateHighlight(); }
+
+// ── Parser ────────────────────────────────────────────────────────────────────
 function parseValue(v) {
   if (v === null || v === undefined || v === '') return null;
   if (v instanceof Date) return v;
@@ -439,504 +408,279 @@ function parseValue(v) {
   if (s === 'null') return null;
   if (s === 'true') return true;
   if (s === 'false') return false;
-  // Date strings
   if (/^\d{4}-\d{2}-\d{2}([ T]\d{2}:\d{2}(:\d{2})?)?$/.test(s)) {
-    const d = new Date(s.replace(' ', 'T'));
-    if (!isNaN(d)) return d;
+    const d = new Date(s.replace(' ','T')); if (!isNaN(d)) return d;
   }
-  const n = Number(s);
-  if (!isNaN(n) && s !== '') return n;
+  const n = Number(s); if (!isNaN(n) && s !== '') return n;
   return s;
 }
 
 function dateToStr(d) {
   if (!(d instanceof Date)) return String(d);
-  const pad = n => String(n).padStart(2,'0');
-  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  const p = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
 }
 
-// Tokenizer
 function tokenize(expr) {
-  const tokens = [];
-  let i = 0;
+  const toks = []; let i = 0;
   while (i < expr.length) {
-    // whitespace
     if (/\s/.test(expr[i])) { i++; continue; }
-    // string literal
     if (expr[i] === "'") {
       let s = ''; i++;
-      while (i < expr.length && expr[i] !== "'") { s += expr[i++]; }
-      i++;
-      tokens.push({ type: 'string', value: s });
-      continue;
+      while (i < expr.length && expr[i] !== "'") s += expr[i++];
+      i++; toks.push({type:'string',value:s}); continue;
     }
-    // column ref {name}
     if (expr[i] === '{') {
       let s = ''; i++;
-      while (i < expr.length && expr[i] !== '}') { s += expr[i++]; }
-      i++;
-      tokens.push({ type: 'colref', value: s });
-      continue;
+      while (i < expr.length && expr[i] !== '}') s += expr[i++];
+      i++; toks.push({type:'colref',value:s}); continue;
     }
-    // number
-    if (/[\d.]/.test(expr[i]) && (tokens.length === 0 || tokens[tokens.length-1].type !== 'ident')) {
-      let s = '';
-      while (i < expr.length && /[\d.]/.test(expr[i])) { s += expr[i++]; }
-      tokens.push({ type: 'number', value: parseFloat(s) });
-      continue;
+    if (/\d/.test(expr[i])) {
+      let s = ''; while (i < expr.length && /[\d.]/.test(expr[i])) s += expr[i++];
+      toks.push({type:'number',value:parseFloat(s)}); continue;
     }
-    // negative number after operator or start
     if (expr[i] === '-') {
-      const last = tokens[tokens.length-1];
-      if (!last || last.type === 'lparen' || last.type === 'comma' || last.type === 'op') {
+      const last = toks[toks.length-1];
+      if (!last || last.type==='lparen'||last.type==='comma'||last.type==='op') {
         let s = '-'; i++;
-        while (i < expr.length && /[\d.]/.test(expr[i])) { s += expr[i++]; }
-        if (s !== '-') { tokens.push({ type: 'number', value: parseFloat(s) }); continue; }
-        else { tokens.push({ type: 'op', value: '-' }); continue; }
+        while (i < expr.length && /[\d.]/.test(expr[i])) s += expr[i++];
+        if (s !== '-') { toks.push({type:'number',value:parseFloat(s)}); continue; }
       }
     }
-    // operators
-    if (expr.slice(i,i+2) === '<=' ) { tokens.push({type:'op',value:'<='}); i+=2; continue; }
-    if (expr.slice(i,i+2) === '>=' ) { tokens.push({type:'op',value:'>='}); i+=2; continue; }
-    if (expr.slice(i,i+2) === '!=' ) { tokens.push({type:'op',value:'!='}); i+=2; continue; }
-    if (expr.slice(i,i+2) === '=' && expr[i+1] !== '=') { tokens.push({type:'op',value:'='}); i+=1; continue; }
-    if (expr[i] === '<') { tokens.push({type:'op',value:'<'}); i++; continue; }
-    if (expr[i] === '>') { tokens.push({type:'op',value:'>'}); i++; continue; }
-    if (expr[i] === '+') { tokens.push({type:'op',value:'+'}); i++; continue; }
-    if (expr[i] === '-') { tokens.push({type:'op',value:'-'}); i++; continue; }
-    if (expr[i] === '*') { tokens.push({type:'op',value:'*'}); i++; continue; }
-    if (expr[i] === '/') { tokens.push({type:'op',value:'/'}); i++; continue; }
-    if (expr[i] === '(') { tokens.push({type:'lparen'}); i++; continue; }
-    if (expr[i] === ')') { tokens.push({type:'rparen'}); i++; continue; }
-    if (expr[i] === ',') { tokens.push({type:'comma'}); i++; continue; }
-    if (expr[i] === '[') {
-      let s = ''; i++;
-      while (i < expr.length && expr[i] !== ']') { s += expr[i++]; }
-      i++;
-      tokens.push({ type: 'partition', value: s });
-      continue;
+    if (expr.slice(i,i+2) === '<=') { toks.push({type:'op',value:'<='}); i+=2; continue; }
+    if (expr.slice(i,i+2) === '>=') { toks.push({type:'op',value:'>='}); i+=2; continue; }
+    if (expr.slice(i,i+2) === '!=') { toks.push({type:'op',value:'!='}); i+=2; continue; }
+    if ('=<>+-*/'.includes(expr[i])) { toks.push({type:'op',value:expr[i]}); i++; continue; }
+    if (expr[i]==='(') { toks.push({type:'lparen'}); i++; continue; }
+    if (expr[i]===')') { toks.push({type:'rparen'}); i++; continue; }
+    if (expr[i]===',') { toks.push({type:'comma'}); i++; continue; }
+    if (expr[i]==='[') {
+      let s=''; i++;
+      while (i<expr.length&&expr[i]!==']') s+=expr[i++];
+      i++; toks.push({type:'partition',value:s}); continue;
     }
-    // ident / keyword
     if (/[a-zA-Z_]/.test(expr[i])) {
-      let s = '';
-      while (i < expr.length && /[a-zA-Z0-9_]/.test(expr[i])) { s += expr[i++]; }
-      tokens.push({ type: 'ident', value: s });
-      continue;
+      let s=''; while (i<expr.length&&/[a-zA-Z0-9_]/.test(expr[i])) s+=expr[i++];
+      toks.push({type:'ident',value:s}); continue;
     }
     i++;
   }
-  return tokens;
+  return toks;
 }
 
-// Parser → AST
-function parse(tokens) {
+function parse(toks) {
   let pos = 0;
-  function peek() { return tokens[pos]; }
-  function consume() { return tokens[pos++]; }
-  function expect(type) { const t = consume(); if (t.type !== type) throw new Error(`Expected ${type}, got ${t?.type} (${t?.value})`); return t; }
+  const peek = () => toks[pos];
+  const consume = () => toks[pos++];
+  const expect = type => { const t=consume(); if(t?.type!==type) throw new Error(`Expected ${type}, got ${t?.type}`); return t; };
 
-  function parseExpr() { return parseOr(); }
-
+  const parseExpr = () => parseOr();
   function parseOr() {
-    let left = parseAnd();
-    while (peek()?.type === 'ident' && peek()?.value?.toUpperCase() === 'OR') {
-      consume();
-      const right = parseAnd();
-      left = { type: 'binop', op: 'OR', left, right };
-    }
-    return left;
+    let l = parseAnd();
+    while (peek()?.type==='ident'&&peek()?.value?.toUpperCase()==='OR') { consume(); l={type:'binop',op:'OR',left:l,right:parseAnd()}; }
+    return l;
   }
-
   function parseAnd() {
-    let left = parseComparison();
-    while (peek()?.type === 'ident' && peek()?.value?.toUpperCase() === 'AND') {
-      consume();
-      const right = parseComparison();
-      left = { type: 'binop', op: 'AND', left, right };
-    }
-    return left;
+    let l = parseCmp();
+    while (peek()?.type==='ident'&&peek()?.value?.toUpperCase()==='AND') { consume(); l={type:'binop',op:'AND',left:l,right:parseCmp()}; }
+    return l;
   }
-
-  function parseComparison() {
-    let left = parseAddSub();
-    while (peek()?.type === 'op' && ['=','!=','<','>','<=','>='].includes(peek().value)) {
-      const op = consume().value;
-      const right = parseAddSub();
-      left = { type: 'binop', op, left, right };
-    }
-    return left;
+  function parseCmp() {
+    let l = parseAdd();
+    while (peek()?.type==='op'&&['=','!=','<','>','<=','>='].includes(peek().value)) { const op=consume().value; l={type:'binop',op,left:l,right:parseAdd()}; }
+    return l;
   }
-
-  function parseAddSub() {
-    let left = parseMulDiv();
-    while (peek()?.type === 'op' && ['+','-'].includes(peek()?.value)) {
-      const op = consume().value;
-      const right = parseMulDiv();
-      left = { type: 'binop', op, left, right };
-    }
-    return left;
+  function parseAdd() {
+    let l = parseMul();
+    while (peek()?.type==='op'&&['+','-'].includes(peek()?.value)) { const op=consume().value; l={type:'binop',op,left:l,right:parseMul()}; }
+    return l;
   }
-
-  function parseMulDiv() {
-    let left = parseUnary();
-    while (peek()?.type === 'op' && ['*','/'].includes(peek()?.value)) {
-      const op = consume().value;
-      const right = parseUnary();
-      left = { type: 'binop', op, left, right };
-    }
-    return left;
+  function parseMul() {
+    let l = parsePrimary();
+    while (peek()?.type==='op'&&['*','/'].includes(peek()?.value)) { const op=consume().value; l={type:'binop',op,left:l,right:parsePrimary()}; }
+    return l;
   }
-
-  function parseUnary() {
-    return parsePrimary();
-  }
-
   function parsePrimary() {
     const t = peek();
-    if (!t) throw new Error('Unexpected end of expression');
-
-    if (t.type === 'number') { consume(); return { type: 'literal', value: t.value }; }
-    if (t.type === 'string') { consume(); return { type: 'literal', value: t.value }; }
-    if (t.type === 'colref') { consume(); return { type: 'colref', name: t.value }; }
-
-    if (t.type === 'ident') {
+    if (!t) throw new Error('Unexpected end');
+    if (t.type==='number') { consume(); return {type:'literal',value:t.value}; }
+    if (t.type==='string') { consume(); return {type:'literal',value:t.value}; }
+    if (t.type==='colref') { consume(); return {type:'colref',name:t.value}; }
+    if (t.type==='ident') {
       const name = t.value.toLowerCase();
-      // Check if next is lparen → function call
-      if (tokens[pos+1]?.type === 'lparen') {
-        consume(); // ident
-        consume(); // lparen
-        const args = [];
-        while (peek()?.type !== 'rparen') {
-          if (peek()?.type === 'partition') { args.push({ type: 'partition', value: consume().value }); }
-          else { args.push(parseExpr()); }
-          if (peek()?.type === 'comma') consume();
+      if (toks[pos+1]?.type==='lparen') {
+        consume(); consume();
+        const args=[];
+        while (peek()?.type!=='rparen') {
+          if (peek()?.type==='partition') args.push({type:'partition',value:consume().value});
+          else args.push(parseExpr());
+          if (peek()?.type==='comma') consume();
         }
         expect('rparen');
-        return { type: 'call', name, args };
+        return {type:'call',name,args};
       }
-      // keyword literal
-      if (name === 'null') { consume(); return { type: 'literal', value: null }; }
-      if (name === 'true') { consume(); return { type: 'literal', value: true }; }
-      if (name === 'false') { consume(); return { type: 'literal', value: false }; }
-      // bare ident → treat as column ref
-      consume();
-      return { type: 'colref', name: t.value };
+      if (name==='null')  { consume(); return {type:'literal',value:null}; }
+      if (name==='true')  { consume(); return {type:'literal',value:true}; }
+      if (name==='false') { consume(); return {type:'literal',value:false}; }
+      consume(); return {type:'colref',name:t.value};
     }
-
-    if (t.type === 'lparen') {
-      consume();
-      const expr = parseExpr();
-      expect('rparen');
-      return expr;
-    }
-
+    if (t.type==='lparen') { consume(); const e=parseExpr(); expect('rparen'); return e; }
     throw new Error(`Unexpected token: ${t.type} (${t.value})`);
   }
-
-  const ast = parseExpr();
-  if (pos < tokens.length) {
-    // ignore trailing tokens silently
-  }
-  return ast;
+  return parseExpr();
 }
 
-// Evaluator
-function evaluate(ast, row, allRows, colIndex) {
-  function eval_(node) {
+function evalNode(ast, row, allRows, colIndex) {
+  function ev(node) {
     if (!node) return null;
-    if (node.type === 'literal') return node.value;
-    if (node.type === 'colref') {
+    if (node.type==='literal') return node.value;
+    if (node.type==='colref') {
       const ci = colIndex[node.name.toLowerCase()];
-      if (ci === undefined) throw new Error(`Unknown column: ${node.name}`);
+      if (ci===undefined) throw new Error(`Unknown column: ${node.name}`);
       return parseValue(row[ci]);
     }
-
-    if (node.type === 'binop') {
-      if (node.op === 'AND') {
-        const l = eval_(node.left);
-        const r = eval_(node.right);
-        return !!l && !!r;
-      }
-      if (node.op === 'OR') {
-        const l = eval_(node.left);
-        const r = eval_(node.right);
-        return !!l || !!r;
-      }
-      const l = eval_(node.left);
-      const r = eval_(node.right);
-      const lv = (l instanceof Date) ? l.getTime() : l;
-      const rv = (r instanceof Date) ? r.getTime() : r;
-      switch (node.op) {
-        case '=': return lv == rv;
-        case '!=': return lv != rv;
-        case '<': return lv < rv;
-        case '>': return lv > rv;
-        case '<=': return lv <= rv;
-        case '>=': return lv >= rv;
-        case '+': return (typeof lv === 'number' && typeof rv === 'number') ? lv + rv : String(lv) + String(rv);
-        case '-': return lv - rv;
-        case '*': return lv * rv;
-        case '/': return rv === 0 ? null : lv / rv;
+    if (node.type==='binop') {
+      if (node.op==='AND') return !!ev(node.left)&&!!ev(node.right);
+      if (node.op==='OR')  return !!ev(node.left)||!!ev(node.right);
+      const l=ev(node.left), r=ev(node.right);
+      const lv=l instanceof Date?l.getTime():l, rv=r instanceof Date?r.getTime():r;
+      switch(node.op) {
+        case '=': return lv==rv; case '!=': return lv!=rv;
+        case '<': return lv<rv;  case '>': return lv>rv;
+        case '<=': return lv<=rv; case '>=': return lv>=rv;
+        case '+': return (typeof lv==='number'&&typeof rv==='number')?lv+rv:String(lv)+String(rv);
+        case '-': return lv-rv; case '*': return lv*rv;
+        case '/': return rv===0?null:lv/rv;
       }
     }
-
-    if (node.type === 'call') {
-      return evalFn(node.name, node.args, row, allRows, colIndex, eval_);
-    }
-
-    throw new Error(`Unknown node type: ${node.type}`);
+    if (node.type==='call') return evalFn(node.name,node.args,row,allRows,colIndex,ev);
+    throw new Error(`Unknown node: ${node.type}`);
   }
-  return eval_(ast);
+  return ev(ast);
 }
 
-function evalFn(name, args, row, allRows, colIndex, eval_) {
-  const fn = name.toLowerCase();
+function evRow(ast,row,allRows,colIndex) { return evalNode(ast,row,allRows,colIndex); }
 
-  if (fn === 'ifelse') {
-    // ifelse(cond, true_val, false_val, [cond2, true_val2, ...])
-    for (let i = 0; i < args.length - 1; i += 2) {
-      const cond = eval_(args[i]);
-      if (cond) return eval_(args[i+1]);
-    }
-    // last arg is else
-    if (args.length % 2 === 1) return eval_(args[args.length-1]);
+function evalFn(name,args,row,allRows,colIndex,ev) {
+  const fn = name.toLowerCase();
+  if (fn==='ifelse') {
+    for (let i=0;i<args.length-1;i+=2) if(ev(args[i])) return ev(args[i+1]);
+    if (args.length%2===1) return ev(args[args.length-1]);
     return null;
   }
-
-  if (fn === 'truncdate') {
-    const unit = eval_(args[0]);
-    const d = eval_(args[1]);
-    if (!(d instanceof Date)) return null;
-    const nd = new Date(d);
-    switch(unit.toUpperCase()) {
-      case 'DD': nd.setHours(0,0,0,0); break;
-      case 'HH': nd.setMinutes(0,0,0); break;
-      case 'MI': nd.setSeconds(0,0); break;
-      case 'MM': nd.setDate(1); nd.setHours(0,0,0,0); break;
-      case 'YYYY': nd.setMonth(0,1); nd.setHours(0,0,0,0); break;
-    }
+  if (fn==='truncdate') {
+    const u=ev(args[0]),d=ev(args[1]); if(!(d instanceof Date)) return null;
+    const nd=new Date(d);
+    if(u==='DD'||u==='dd') nd.setHours(0,0,0,0);
+    else if(u==='HH'||u==='hh') nd.setMinutes(0,0,0);
+    else if(u==='MI'||u==='mi') nd.setSeconds(0,0);
+    else if(u==='MM'||u==='mm') { nd.setDate(1); nd.setHours(0,0,0,0); }
+    else if(u==='YYYY'||u==='yyyy') { nd.setMonth(0,1); nd.setHours(0,0,0,0); }
     return nd;
   }
-
-  if (fn === 'adddatetime') {
-    const amount = eval_(args[0]);
-    const unit = eval_(args[1]);
-    const d = eval_(args[2]);
-    if (!(d instanceof Date)) return null;
-    const nd = new Date(d);
-    switch(unit.toUpperCase()) {
-      case 'MI': nd.setMinutes(nd.getMinutes() + amount); break;
-      case 'HH': nd.setHours(nd.getHours() + amount); break;
-      case 'DD': nd.setDate(nd.getDate() + amount); break;
-      case 'MM': nd.setMonth(nd.getMonth() + amount); break;
-      case 'YYYY': nd.setFullYear(nd.getFullYear() + amount); break;
-    }
+  if (fn==='adddatetime') {
+    const amt=ev(args[0]),u=ev(args[1]),d=ev(args[2]); if(!(d instanceof Date)) return null;
+    const nd=new Date(d); const uu=String(u).toUpperCase();
+    if(uu==='MI') nd.setMinutes(nd.getMinutes()+amt);
+    else if(uu==='HH') nd.setHours(nd.getHours()+amt);
+    else if(uu==='DD') nd.setDate(nd.getDate()+amt);
+    else if(uu==='MM') nd.setMonth(nd.getMonth()+amt);
+    else if(uu==='YYYY') nd.setFullYear(nd.getFullYear()+amt);
     return nd;
   }
-
-  if (fn === 'datediff') {
-    const d1 = eval_(args[0]);
-    const d2 = eval_(args[1]);
-    const unit = eval_(args[2]);
-    if (!(d1 instanceof Date) || !(d2 instanceof Date)) return null;
-    const diff = d2.getTime() - d1.getTime();
-    switch(unit.toUpperCase()) {
-      case 'MI': return diff / 60000;
-      case 'HH': return diff / 3600000;
-      case 'DD': return diff / 86400000;
-      case 'SS': return diff / 1000;
-    }
+  if (fn==='datediff') {
+    const d1=ev(args[0]),d2=ev(args[1]),u=ev(args[2]);
+    if(!(d1 instanceof Date)||!(d2 instanceof Date)) return null;
+    const diff=d2.getTime()-d1.getTime(); const uu=String(u).toUpperCase();
+    if(uu==='MI') return diff/60000; if(uu==='HH') return diff/3600000;
+    if(uu==='DD') return diff/86400000; if(uu==='SS') return diff/1000;
     return diff;
   }
-
-  if (fn === 'extract') {
-    const unit = eval_(args[0]);
-    const d = eval_(args[1]);
-    if (!(d instanceof Date)) return null;
-    switch(unit.toUpperCase()) {
-      case 'HH': return d.getHours();
-      case 'MI': return d.getMinutes();
-      case 'DD': return d.getDate();
-      case 'MM': return d.getMonth() + 1;
-      case 'YYYY': return d.getFullYear();
-      case 'SS': return d.getSeconds();
-    }
+  if (fn==='extract') {
+    const u=ev(args[0]),d=ev(args[1]); if(!(d instanceof Date)) return null;
+    const uu=String(u).toUpperCase();
+    if(uu==='HH') return d.getHours(); if(uu==='MI') return d.getMinutes();
+    if(uu==='DD') return d.getDate();  if(uu==='MM') return d.getMonth()+1;
+    if(uu==='YYYY') return d.getFullYear(); if(uu==='SS') return d.getSeconds();
     return null;
   }
-
-  if (fn === 'min') {
-    const vals = allRows.map(r => {
-      try {
-        const v = evaluateForRow(args[0], r, allRows, colIndex);
-        return (v instanceof Date) ? v.getTime() : v;
-      } catch { return null; }
-    }).filter(v => v !== null && v !== undefined);
-    if (!vals.length) return null;
-    const m = Math.min(...vals);
-    // check if original values were dates
-    const sample = evaluateForRow(args[0], allRows[0], allRows, colIndex);
-    if (sample instanceof Date) return new Date(m);
-    return m;
+  if (fn==='min'||fn==='max') {
+    const vals=allRows.map(r=>{try{return evRow(args[0],r,allRows,colIndex);}catch{return null;}}).filter(v=>v!=null);
+    if(!vals.length) return null;
+    const nums=vals.map(v=>v instanceof Date?v.getTime():v);
+    const res=fn==='min'?Math.min(...nums):Math.max(...nums);
+    return vals[0] instanceof Date?new Date(res):res;
   }
-
-  if (fn === 'max') {
-    const vals = allRows.map(r => {
-      try {
-        const v = evaluateForRow(args[0], r, allRows, colIndex);
-        return (v instanceof Date) ? v.getTime() : v;
-      } catch { return null; }
-    }).filter(v => v !== null && v !== undefined);
-    if (!vals.length) return null;
-    const m = Math.max(...vals);
-    const sample = evaluateForRow(args[0], allRows[0], allRows, colIndex);
-    if (sample instanceof Date) return new Date(m);
-    return m;
+  if (fn==='minover'||fn==='maxover') {
+    const exprA=args[0],partA=args[1];
+    let pcols=[];
+    if(partA?.type==='partition') pcols=partA.value.split(',').map(s=>s.trim().replace(/[{}]/g,'').toLowerCase()).filter(Boolean);
+    const gk=r=>pcols.map(pc=>{const ci=colIndex[pc];return ci!==undefined?r[ci]:'';}).join('|');
+    const ck=gk(row);
+    const prows=allRows.filter(r=>gk(r)===ck);
+    const vals=prows.map(r=>{try{return evRow(exprA,r,allRows,colIndex);}catch{return null;}}).filter(v=>v!=null);
+    if(!vals.length) return null;
+    const nums=vals.map(v=>v instanceof Date?v.getTime():typeof v==='number'?v:null).filter(v=>v!==null);
+    if(!nums.length) return null;
+    const res=fn==='minover'?Math.min(...nums):Math.max(...nums);
+    return vals[0] instanceof Date?new Date(res):res;
   }
-
-  if (fn === 'minover' || fn === 'maxover') {
-    // minOver(expr, [partition_cols], PRE_AGG)
-    const exprArg = args[0];
-    const partitionArg = args[1]; // partition node
-    
-    // Get partition key for current row
-    let partitionCols = [];
-    if (partitionArg?.type === 'partition') {
-      partitionCols = partitionArg.value.split(',').map(s => s.trim().replace(/[{}]/g,'').toLowerCase()).filter(Boolean);
-    }
-
-    const getPartKey = (r) => partitionCols.map(pc => {
-      const ci = colIndex[pc];
-      return ci !== undefined ? r[ci] : '';
-    }).join('|');
-
-    const currentKey = getPartKey(row);
-
-    // Filter rows in same partition
-    const partRows = allRows.filter(r => getPartKey(r) === currentKey);
-
-    const vals = partRows.map(r => {
-      try {
-        const v = evaluateForRow(exprArg, r, allRows, colIndex);
-        return v;
-      } catch { return null; }
-    }).filter(v => v !== null && v !== undefined);
-
-    if (!vals.length) return null;
-
-    const numericVals = vals.map(v => (v instanceof Date) ? v.getTime() : (typeof v === 'number' ? v : null)).filter(v => v !== null);
-    if (!numericVals.length) return null;
-
-    const result = fn === 'minover' ? Math.min(...numericVals) : Math.max(...numericVals);
-    if (vals[0] instanceof Date) return new Date(result);
-    return result;
-  }
-
-  if (fn === 'tostring' || fn === 'tostring') {
-    return String(eval_(args[0]));
-  }
-
-  if (fn === 'parseinteger' || fn === 'parseint') {
-    return parseInt(eval_(args[0]));
-  }
-
-  if (fn === 'parsedecimal' || fn === 'parsefloat') {
-    return parseFloat(eval_(args[0]));
-  }
-
-  if (fn === 'abs') return Math.abs(eval_(args[0]));
-  if (fn === 'ceil') return Math.ceil(eval_(args[0]));
-  if (fn === 'floor') return Math.floor(eval_(args[0]));
-  if (fn === 'round') return Math.round(eval_(args[0]));
-
-  if (fn === 'isnotnull' || fn === 'isnotnull') {
-    const v = eval_(args[0]);
-    return v !== null && v !== undefined;
-  }
-  if (fn === 'isnull') {
-    const v = eval_(args[0]);
-    return v === null || v === undefined;
-  }
-
+  if(fn==='tostring'||fn==='concat') return args.map(a=>String(ev(a)??'')).join('');
+  if(fn==='parseinteger'||fn==='parseint') return parseInt(ev(args[0]));
+  if(fn==='parsedecimal'||fn==='parsefloat') return parseFloat(ev(args[0]));
+  if(fn==='abs') return Math.abs(ev(args[0]));
+  if(fn==='ceil') return Math.ceil(ev(args[0]));
+  if(fn==='floor') return Math.floor(ev(args[0]));
+  if(fn==='round') return Math.round(ev(args[0]));
+  if(fn==='isnull') { const v=ev(args[0]); return v==null; }
+  if(fn==='isnotnull') { const v=ev(args[0]); return v!=null; }
+  if(fn==='coalesce') { for(const a of args){const v=ev(a);if(v!=null)return v;} return null; }
+  if(fn==='pre_agg') return null;
   throw new Error(`Unsupported function: ${name}`);
 }
 
-function evaluateForRow(ast, row, allRows, colIndex) {
-  return evaluate(ast, row, allRows, colIndex);
-}
-
-// ─── Run ───────────────────────────────────────────────────────────────────────
+// ── Run ───────────────────────────────────────────────────────────────────────
 function runFormula() {
+  syncDOM();
   const formulaText = document.getElementById('formula').value.trim();
-  const outputBody = document.getElementById('output-body');
-
-  if (!formulaText) {
-    outputBody.innerHTML = '<div class="error-banner">No formula entered.</div>';
-    return;
-  }
-
-  // Sync table inputs to state
-  const table = document.getElementById('data-table');
-  const headerInputs = table.querySelectorAll('thead input');
-  headerInputs.forEach((inp, i) => { cols[i] = inp.value; });
-  const bodyRows = table.querySelectorAll('tbody tr');
-  bodyRows.forEach((tr, ri) => {
-    const inputs = tr.querySelectorAll('td input');
-    inputs.forEach((inp, ci) => { if (rows[ri]) rows[ri][ci] = inp.value; });
-  });
-
+  const outputBody  = document.getElementById('output-body');
+  if (!formulaText) { outputBody.innerHTML = '<div class="error-banner">No formula entered.</div>'; return; }
   try {
-    const tokens = tokenize(formulaText);
-    const ast = parse(tokens);
-
+    const ast = parse(tokenize(formulaText));
     const colIndex = {};
-    cols.forEach((c, i) => { colIndex[c.toLowerCase()] = i; });
-
+    cols.forEach((c,i) => { colIndex[c.toLowerCase()] = i; });
     const results = rows.map(row => {
       try {
-        const val = evaluate(ast, row, rows, colIndex);
-        if (val instanceof Date) return { ok: true, value: dateToStr(val) };
-        return { ok: true, value: val === null ? 'null' : String(val) };
-      } catch(e) {
-        return { ok: false, value: e.message };
-      }
+        const val = evalNode(ast, row, rows, colIndex);
+        return { ok:true, value: val instanceof Date ? dateToStr(val) : val==null ? 'null' : String(val) };
+      } catch(e) { return { ok:false, value: e.message }; }
     });
-
-    // Build output table
-    let html = '<div id="output-table-wrap"><table>';
-    // Header = original cols + result
-    html += '<thead><tr>';
-    cols.forEach(c => html += `<th><input readonly value="${escHtml(c)}"></th>`);
-    html += '<th><input readonly value="▶ result" style="color:var(--green)"></th></tr></thead>';
-    html += '<tbody>';
+    let html = '<div id="output-table-wrap"><table><thead><tr>';
+    cols.forEach(c => html += `<th><input readonly value="${esc(c)}"></th>`);
+    html += `<th><input readonly value="▶ result" style="color:var(--green)"></th></tr></thead><tbody>`;
     rows.forEach((row, ri) => {
       html += '<tr>';
-      row.forEach(cell => html += `<td><input readonly value="${escHtml(String(cell ?? ''))}"></td>`);
+      row.forEach(cell => html += `<td><input readonly value="${esc(String(cell??''))}"></td>`);
       const res = results[ri];
-      html += `<td class="result-cell ${res.ok ? '' : 'err'}">${escHtml(res.value)}</td>`;
-      html += '</tr>';
+      html += `<td class="result-cell ${res.ok?'':'err'}">${esc(res.value)}</td></tr>`;
     });
     html += '</tbody></table></div>';
-
     outputBody.innerHTML = html;
     document.getElementById('run-status').innerHTML = `<span class="badge">✓ ${rows.length} rows</span>`;
-
   } catch(e) {
-    outputBody.innerHTML = `<div class="error-banner">Parse error: ${escHtml(e.message)}</div>`;
+    outputBody.innerHTML = `<div class="error-banner">Parse error: ${esc(e.message)}</div>`;
     document.getElementById('run-status').textContent = '';
   }
 }
 
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// Keyboard shortcut
-document.addEventListener('keydown', e => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') runFormula();
-});
-
-// Init
+// ── Init ──────────────────────────────────────────────────────────────────────
+const ta = document.getElementById('formula');
+ta.value = DEFAULT_FORMULA;
+ta.addEventListener('input', updateHighlight);
+ta.addEventListener('scroll', () => { document.getElementById('formula-highlight').scrollTop = ta.scrollTop; });
+document.addEventListener('keydown', e => { if ((e.ctrlKey||e.metaKey) && e.key==='Enter') runFormula(); });
 renderTable();
+updateHighlight();
 </script>
 </body>
 </html>
