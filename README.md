@@ -2,6 +2,8 @@
 
 A lightweight, browser-based tool to write, test, and debug [AWS QuickSight](https://aws.amazon.com/quicksight/) calculated field formulas against sample data — no AWS account required.
 
+Use it here: [github pages](https://aws.amazon.com/quicksight/)
+
 ## Overview
 
 When building QuickSight dashboards, iterating on calculated field expressions can be slow because you need to publish and refresh your analysis each time. This tool lets you prototype formulas locally in your browser with an interactive spreadsheet editor and instant formula evaluation.
@@ -14,15 +16,6 @@ When building QuickSight dashboards, iterating on calculated field expressions c
 - ⚡ **Instant evaluation** — run formulas row-by-row with `Ctrl+Enter` / `Cmd+Enter`
 - 🔧 **No dependencies** — single self-contained HTML file, pure vanilla JavaScript
 
-## Getting Started
-
-1. Clone or download this repository:
-   ```bash
-   git clone https://github.com/nicosandller/quicksight_calculated_field_tester.git
-   ```
-2. Open `index.html` in your browser.
-3. Write a formula in the left panel, edit sample data in the right panel, and click **▶ Run Formula** (or press `Ctrl+Enter`).
-4. Results appear in the output panel at the bottom.
 
 ## User Interface
 
