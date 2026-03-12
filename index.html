@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuickSight Formula Tester</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;800&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c27;
+    --border: #2a2a3d;
+    --accent: #7c6af7;
+    --accent2: #f7a26a;
+    --text: #e8e8f0;
+    --muted: #6b6b85;
+    --green: #5af78e;
+    --red: #f75a5a;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    padding: 32px 24px;
+  }
+
+  header {
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 20px;
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+  }
+
+  header h1 {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--text);
+  }
+
+  header span {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(124,106,247,0.12);
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(124,106,247,0.25);
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .panel-header {
+    padding: 12px 16px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .panel-header .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .panel-body { padding: 16px; }
+
+  /* Formula editor */
+  #formula {
+    width: 100%;
+    min-height: 180px;
+    background: #0d0d14;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--accent2);
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.7;
+    padding: 14px;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s;
+    tab-size: 2;
+  }
+
+  #formula:focus { border-color: var(--accent); }
+
+  /* Table editor */
+  .table-controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  button {
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 7px 14px;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    background: var(--surface2);
+    color: var(--text);
+    transition: all 0.15s;
+    letter-spacing: 0.3px;
+  }
+
+  button:hover { border-color: var(--accent); color: var(--accent); }
+
+  button.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  button.primary:hover { background: #6a58e0; border-color: #6a58e0; color: white; }
+
+  .table-wrapper {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    max-height: 280px;
+    overflow-y: auto;
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+
+  th {
+    background: var(--surface2);
+    padding: 0;
+    border: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+
+  th input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 10px;
+    outline: none;
+    text-align: center;
+  }
+
+  td {
+    border: 1px solid var(--border);
+    padding: 0;
+  }
+
+  td input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 7px 10px;
+    outline: none;
+  }
+
+  td input:focus, th input:focus {
+    background: rgba(124,106,247,0.08);
+  }
+
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  td.del-col {
+    width: 32px;
+    text-align: center;
+  }
+
+  td.del-col button {
+    padding: 2px 6px;
+    font-size: 10px;
+    border-color: transparent;
+    background: transparent;
+    color: var(--muted);
+  }
+
+  td.del-col button:hover { color: var(--red); border-color: transparent; }
+
+  /* Run button */
+  .run-row {
+    margin-top: 16px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  /* Output */
+  .output-full {
+    grid-column: 1 / -1;
+  }
+
+  #output-table-wrap {
+    overflow-x: auto;
+  }
+
+  #output-table-wrap table th {
+    background: rgba(124,106,247,0.15);
+  }
+
+  #output-table-wrap table th input {
+    color: var(--accent);
+  }
+
+  .result-cell {
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 7px 10px;
+    border: 1px solid var(--border);
+    color: var(--green);
+  }
+
+  .result-cell.err { color: var(--red); }
+
+  .error-banner {
+    background: rgba(247,90,90,0.1);
+    border: 1px solid rgba(247,90,90,0.3);
+    border-radius: 6px;
+    padding: 12px 14px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--red);
+    white-space: pre-wrap;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .hint {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 8px;
+    font-family: var(--mono);
+    line-height: 1.6;
+  }
+
+  .hint code {
+    color: var(--accent2);
+    background: rgba(247,162,106,0.1);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  .badge {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: rgba(90,247,142,0.1);
+    color: var(--green);
+    border: 1px solid rgba(90,247,142,0.2);
+    font-family: var(--mono);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>QuickSight Formula Tester</h1>
+  <span>QS Calculated Fields</span>
+</header>
+
+<div class="layout">
+
+  <!-- Formula Panel -->
+  <div class="panel">
+    <div class="panel-header"><div class="dot"></div>Calculated Field</div>
+    <div class="panel-body">
+      <textarea id="formula" spellcheck="false" placeholder="Enter your QuickSight calculated field formula here...
+
+Example:
+ifelse(
+  extract('HH', {timestamp}) >= 8,
+  'morning',
+  'night'
+)"></textarea>
+      <div class="hint">
+        Supported: <code>ifelse</code> <code>truncDate</code> <code>addDateTime</code> <code>dateDiff</code> <code>extract</code> <code>minOver</code> <code>maxOver</code> <code>min</code> <code>max</code> <code>toString</code> <code>parseInt</code> <code>parseDecimal</code><br>
+        Reference columns with <code>{columnName}</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table Panel -->
+  <div class="panel">
+    <div class="panel-header"><div class="dot" style="background:var(--accent2)"></div>Sample Data</div>
+    <div class="panel-body">
+      <div class="table-controls">
+        <button onclick="addCol()">+ Column</button>
+        <button onclick="addRow()">+ Row</button>
+        <button onclick="clearTable()">Clear</button>
+      </div>
+      <div class="table-wrapper">
+        <table id="data-table"></table>
+      </div>
+      <div class="hint">First row = column names. Use ISO dates: <code>2024-01-15 08:30:00</code></div>
+      <div class="run-row">
+        <button class="primary" onclick="runFormula()">▶ Run Formula</button>
+        <span id="run-status"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Output Panel -->
+  <div class="panel output-full">
+    <div class="panel-header"><div class="dot" style="background:var(--green)"></div>Output</div>
+    <div class="panel-body" id="output-body">
+      <div class="empty-state">Run your formula to see results here</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── Table State ───────────────────────────────────────────────────────────────
+let cols = ['timestamp', 'is_surplus', 'day_only'];
+let rows = [
+  ['2024-01-15 06:00:00', '0', '2024-01-15'],
+  ['2024-01-15 08:00:00', '1', '2024-01-15'],
+  ['2024-01-15 10:00:00', '1', '2024-01-15'],
+  ['2024-01-15 13:00:00', '1', '2024-01-15'],
+  ['2024-01-15 15:00:00', '0', '2024-01-15'],
+];
+
+function renderTable() {
+  const t = document.getElementById('data-table');
+  t.innerHTML = '';
+
+  // Header
+  const thead = t.createTHead();
+  const hr = thead.insertRow();
+  cols.forEach((c, ci) => {
+    const th = document.createElement('th');
+    const inp = document.createElement('input');
+    inp.value = c;
+    inp.placeholder = 'col' + ci;
+    inp.oninput = e => { cols[ci] = e.target.value; };
+    th.appendChild(inp);
+    hr.appendChild(th);
+  });
+  // Delete col header
+  const thd = document.createElement('th');
+  thd.style.width = '32px';
+  hr.appendChild(thd);
+
+  // Body
+  const tbody = t.createTBody();
+  rows.forEach((row, ri) => {
+    const tr = tbody.insertRow();
+    cols.forEach((_, ci) => {
+      const td = tr.insertCell();
+      const inp = document.createElement('input');
+      inp.value = row[ci] || '';
+      inp.placeholder = '—';
+      inp.oninput = e => { rows[ri][ci] = e.target.value; };
+      td.appendChild(inp);
+    });
+    // Delete row
+    const tdel = tr.insertCell();
+    tdel.className = 'del-col';
+    const btn = document.createElement('button');
+    btn.textContent = '✕';
+    btn.onclick = () => { rows.splice(ri, 1); renderTable(); };
+    tdel.appendChild(btn);
+  });
+}
+
+function addCol() {
+  cols.push('col' + cols.length);
+  rows.forEach(r => r.push(''));
+  renderTable();
+}
+
+function addRow() {
+  rows.push(new Array(cols.length).fill(''));
+  renderTable();
+}
+
+function clearTable() {
+  cols = ['col0'];
+  rows = [['']];
+  renderTable();
+}
+
+// ─── Formula Parser / Evaluator ────────────────────────────────────────────────
+
+function parseValue(v) {
+  if (v === null || v === undefined || v === '') return null;
+  if (v instanceof Date) return v;
+  if (typeof v === 'number') return v;
+  if (typeof v === 'boolean') return v;
+  const s = String(v).trim();
+  if (s === 'null') return null;
+  if (s === 'true') return true;
+  if (s === 'false') return false;
+  // Date strings
+  if (/^\d{4}-\d{2}-\d{2}([ T]\d{2}:\d{2}(:\d{2})?)?$/.test(s)) {
+    const d = new Date(s.replace(' ', 'T'));
+    if (!isNaN(d)) return d;
+  }
+  const n = Number(s);
+  if (!isNaN(n) && s !== '') return n;
+  return s;
+}
+
+function dateToStr(d) {
+  if (!(d instanceof Date)) return String(d);
+  const pad = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+// Tokenizer
+function tokenize(expr) {
+  const tokens = [];
+  let i = 0;
+  while (i < expr.length) {
+    // whitespace
+    if (/\s/.test(expr[i])) { i++; continue; }
+    // string literal
+    if (expr[i] === "'") {
+      let s = ''; i++;
+      while (i < expr.length && expr[i] !== "'") { s += expr[i++]; }
+      i++;
+      tokens.push({ type: 'string', value: s });
+      continue;
+    }
+    // column ref {name}
+    if (expr[i] === '{') {
+      let s = ''; i++;
+      while (i < expr.length && expr[i] !== '}') { s += expr[i++]; }
+      i++;
+      tokens.push({ type: 'colref', value: s });
+      continue;
+    }
+    // number
+    if (/[\d.]/.test(expr[i]) && (tokens.length === 0 || tokens[tokens.length-1].type !== 'ident')) {
+      let s = '';
+      while (i < expr.length && /[\d.]/.test(expr[i])) { s += expr[i++]; }
+      tokens.push({ type: 'number', value: parseFloat(s) });
+      continue;
+    }
+    // negative number after operator or start
+    if (expr[i] === '-') {
+      const last = tokens[tokens.length-1];
+      if (!last || last.type === 'lparen' || last.type === 'comma' || last.type === 'op') {
+        let s = '-'; i++;
+        while (i < expr.length && /[\d.]/.test(expr[i])) { s += expr[i++]; }
+        if (s !== '-') { tokens.push({ type: 'number', value: parseFloat(s) }); continue; }
+        else { tokens.push({ type: 'op', value: '-' }); continue; }
+      }
+    }
+    // operators
+    if (expr.slice(i,i+2) === '<=' ) { tokens.push({type:'op',value:'<='}); i+=2; continue; }
+    if (expr.slice(i,i+2) === '>=' ) { tokens.push({type:'op',value:'>='}); i+=2; continue; }
+    if (expr.slice(i,i+2) === '!=' ) { tokens.push({type:'op',value:'!='}); i+=2; continue; }
+    if (expr.slice(i,i+2) === '=' && expr[i+1] !== '=') { tokens.push({type:'op',value:'='}); i+=1; continue; }
+    if (expr[i] === '<') { tokens.push({type:'op',value:'<'}); i++; continue; }
+    if (expr[i] === '>') { tokens.push({type:'op',value:'>'}); i++; continue; }
+    if (expr[i] === '+') { tokens.push({type:'op',value:'+'}); i++; continue; }
+    if (expr[i] === '-') { tokens.push({type:'op',value:'-'}); i++; continue; }
+    if (expr[i] === '*') { tokens.push({type:'op',value:'*'}); i++; continue; }
+    if (expr[i] === '/') { tokens.push({type:'op',value:'/'}); i++; continue; }
+    if (expr[i] === '(') { tokens.push({type:'lparen'}); i++; continue; }
+    if (expr[i] === ')') { tokens.push({type:'rparen'}); i++; continue; }
+    if (expr[i] === ',') { tokens.push({type:'comma'}); i++; continue; }
+    if (expr[i] === '[') {
+      let s = ''; i++;
+      while (i < expr.length && expr[i] !== ']') { s += expr[i++]; }
+      i++;
+      tokens.push({ type: 'partition', value: s });
+      continue;
+    }
+    // ident / keyword
+    if (/[a-zA-Z_]/.test(expr[i])) {
+      let s = '';
+      while (i < expr.length && /[a-zA-Z0-9_]/.test(expr[i])) { s += expr[i++]; }
+      tokens.push({ type: 'ident', value: s });
+      continue;
+    }
+    i++;
+  }
+  return tokens;
+}
+
+// Parser → AST
+function parse(tokens) {
+  let pos = 0;
+  function peek() { return tokens[pos]; }
+  function consume() { return tokens[pos++]; }
+  function expect(type) { const t = consume(); if (t.type !== type) throw new Error(`Expected ${type}, got ${t?.type} (${t?.value})`); return t; }
+
+  function parseExpr() { return parseOr(); }
+
+  function parseOr() {
+    let left = parseAnd();
+    while (peek()?.type === 'ident' && peek()?.value?.toUpperCase() === 'OR') {
+      consume();
+      const right = parseAnd();
+      left = { type: 'binop', op: 'OR', left, right };
+    }
+    return left;
+  }
+
+  function parseAnd() {
+    let left = parseComparison();
+    while (peek()?.type === 'ident' && peek()?.value?.toUpperCase() === 'AND') {
+      consume();
+      const right = parseComparison();
+      left = { type: 'binop', op: 'AND', left, right };
+    }
+    return left;
+  }
+
+  function parseComparison() {
+    let left = parseAddSub();
+    while (peek()?.type === 'op' && ['=','!=','<','>','<=','>='].includes(peek().value)) {
+      const op = consume().value;
+      const right = parseAddSub();
+      left = { type: 'binop', op, left, right };
+    }
+    return left;
+  }
+
+  function parseAddSub() {
+    let left = parseMulDiv();
+    while (peek()?.type === 'op' && ['+','-'].includes(peek()?.value)) {
+      const op = consume().value;
+      const right = parseMulDiv();
+      left = { type: 'binop', op, left, right };
+    }
+    return left;
+  }
+
+  function parseMulDiv() {
+    let left = parseUnary();
+    while (peek()?.type === 'op' && ['*','/'].includes(peek()?.value)) {
+      const op = consume().value;
+      const right = parseUnary();
+      left = { type: 'binop', op, left, right };
+    }
+    return left;
+  }
+
+  function parseUnary() {
+    return parsePrimary();
+  }
+
+  function parsePrimary() {
+    const t = peek();
+    if (!t) throw new Error('Unexpected end of expression');
+
+    if (t.type === 'number') { consume(); return { type: 'literal', value: t.value }; }
+    if (t.type === 'string') { consume(); return { type: 'literal', value: t.value }; }
+    if (t.type === 'colref') { consume(); return { type: 'colref', name: t.value }; }
+
+    if (t.type === 'ident') {
+      const name = t.value.toLowerCase();
+      // Check if next is lparen → function call
+      if (tokens[pos+1]?.type === 'lparen') {
+        consume(); // ident
+        consume(); // lparen
+        const args = [];
+        while (peek()?.type !== 'rparen') {
+          if (peek()?.type === 'partition') { args.push({ type: 'partition', value: consume().value }); }
+          else { args.push(parseExpr()); }
+          if (peek()?.type === 'comma') consume();
+        }
+        expect('rparen');
+        return { type: 'call', name, args };
+      }
+      // keyword literal
+      if (name === 'null') { consume(); return { type: 'literal', value: null }; }
+      if (name === 'true') { consume(); return { type: 'literal', value: true }; }
+      if (name === 'false') { consume(); return { type: 'literal', value: false }; }
+      // bare ident → treat as column ref
+      consume();
+      return { type: 'colref', name: t.value };
+    }
+
+    if (t.type === 'lparen') {
+      consume();
+      const expr = parseExpr();
+      expect('rparen');
+      return expr;
+    }
+
+    throw new Error(`Unexpected token: ${t.type} (${t.value})`);
+  }
+
+  const ast = parseExpr();
+  if (pos < tokens.length) {
+    // ignore trailing tokens silently
+  }
+  return ast;
+}
+
+// Evaluator
+function evaluate(ast, row, allRows, colIndex) {
+  function eval_(node) {
+    if (!node) return null;
+    if (node.type === 'literal') return node.value;
+    if (node.type === 'colref') {
+      const ci = colIndex[node.name.toLowerCase()];
+      if (ci === undefined) throw new Error(`Unknown column: ${node.name}`);
+      return parseValue(row[ci]);
+    }
+
+    if (node.type === 'binop') {
+      if (node.op === 'AND') {
+        const l = eval_(node.left);
+        const r = eval_(node.right);
+        return !!l && !!r;
+      }
+      if (node.op === 'OR') {
+        const l = eval_(node.left);
+        const r = eval_(node.right);
+        return !!l || !!r;
+      }
+      const l = eval_(node.left);
+      const r = eval_(node.right);
+      const lv = (l instanceof Date) ? l.getTime() : l;
+      const rv = (r instanceof Date) ? r.getTime() : r;
+      switch (node.op) {
+        case '=': return lv == rv;
+        case '!=': return lv != rv;
+        case '<': return lv < rv;
+        case '>': return lv > rv;
+        case '<=': return lv <= rv;
+        case '>=': return lv >= rv;
+        case '+': return (typeof lv === 'number' && typeof rv === 'number') ? lv + rv : String(lv) + String(rv);
+        case '-': return lv - rv;
+        case '*': return lv * rv;
+        case '/': return rv === 0 ? null : lv / rv;
+      }
+    }
+
+    if (node.type === 'call') {
+      return evalFn(node.name, node.args, row, allRows, colIndex, eval_);
+    }
+
+    throw new Error(`Unknown node type: ${node.type}`);
+  }
+  return eval_(ast);
+}
+
+function evalFn(name, args, row, allRows, colIndex, eval_) {
+  const fn = name.toLowerCase();
+
+  if (fn === 'ifelse') {
+    // ifelse(cond, true_val, false_val, [cond2, true_val2, ...])
+    for (let i = 0; i < args.length - 1; i += 2) {
+      const cond = eval_(args[i]);
+      if (cond) return eval_(args[i+1]);
+    }
+    // last arg is else
+    if (args.length % 2 === 1) return eval_(args[args.length-1]);
+    return null;
+  }
+
+  if (fn === 'truncdate') {
+    const unit = eval_(args[0]);
+    const d = eval_(args[1]);
+    if (!(d instanceof Date)) return null;
+    const nd = new Date(d);
+    switch(unit.toUpperCase()) {
+      case 'DD': nd.setHours(0,0,0,0); break;
+      case 'HH': nd.setMinutes(0,0,0); break;
+      case 'MI': nd.setSeconds(0,0); break;
+      case 'MM': nd.setDate(1); nd.setHours(0,0,0,0); break;
+      case 'YYYY': nd.setMonth(0,1); nd.setHours(0,0,0,0); break;
+    }
+    return nd;
+  }
+
+  if (fn === 'adddatetime') {
+    const amount = eval_(args[0]);
+    const unit = eval_(args[1]);
+    const d = eval_(args[2]);
+    if (!(d instanceof Date)) return null;
+    const nd = new Date(d);
+    switch(unit.toUpperCase()) {
+      case 'MI': nd.setMinutes(nd.getMinutes() + amount); break;
+      case 'HH': nd.setHours(nd.getHours() + amount); break;
+      case 'DD': nd.setDate(nd.getDate() + amount); break;
+      case 'MM': nd.setMonth(nd.getMonth() + amount); break;
+      case 'YYYY': nd.setFullYear(nd.getFullYear() + amount); break;
+    }
+    return nd;
+  }
+
+  if (fn === 'datediff') {
+    const d1 = eval_(args[0]);
+    const d2 = eval_(args[1]);
+    const unit = eval_(args[2]);
+    if (!(d1 instanceof Date) || !(d2 instanceof Date)) return null;
+    const diff = d2.getTime() - d1.getTime();
+    switch(unit.toUpperCase()) {
+      case 'MI': return diff / 60000;
+      case 'HH': return diff / 3600000;
+      case 'DD': return diff / 86400000;
+      case 'SS': return diff / 1000;
+    }
+    return diff;
+  }
+
+  if (fn === 'extract') {
+    const unit = eval_(args[0]);
+    const d = eval_(args[1]);
+    if (!(d instanceof Date)) return null;
+    switch(unit.toUpperCase()) {
+      case 'HH': return d.getHours();
+      case 'MI': return d.getMinutes();
+      case 'DD': return d.getDate();
+      case 'MM': return d.getMonth() + 1;
+      case 'YYYY': return d.getFullYear();
+      case 'SS': return d.getSeconds();
+    }
+    return null;
+  }
+
+  if (fn === 'min') {
+    const vals = allRows.map(r => {
+      try {
+        const v = evaluateForRow(args[0], r, allRows, colIndex);
+        return (v instanceof Date) ? v.getTime() : v;
+      } catch { return null; }
+    }).filter(v => v !== null && v !== undefined);
+    if (!vals.length) return null;
+    const m = Math.min(...vals);
+    // check if original values were dates
+    const sample = evaluateForRow(args[0], allRows[0], allRows, colIndex);
+    if (sample instanceof Date) return new Date(m);
+    return m;
+  }
+
+  if (fn === 'max') {
+    const vals = allRows.map(r => {
+      try {
+        const v = evaluateForRow(args[0], r, allRows, colIndex);
+        return (v instanceof Date) ? v.getTime() : v;
+      } catch { return null; }
+    }).filter(v => v !== null && v !== undefined);
+    if (!vals.length) return null;
+    const m = Math.max(...vals);
+    const sample = evaluateForRow(args[0], allRows[0], allRows, colIndex);
+    if (sample instanceof Date) return new Date(m);
+    return m;
+  }
+
+  if (fn === 'minover' || fn === 'maxover') {
+    // minOver(expr, [partition_cols], PRE_AGG)
+    const exprArg = args[0];
+    const partitionArg = args[1]; // partition node
+    
+    // Get partition key for current row
+    let partitionCols = [];
+    if (partitionArg?.type === 'partition') {
+      partitionCols = partitionArg.value.split(',').map(s => s.trim().replace(/[{}]/g,'').toLowerCase()).filter(Boolean);
+    }
+
+    const getPartKey = (r) => partitionCols.map(pc => {
+      const ci = colIndex[pc];
+      return ci !== undefined ? r[ci] : '';
+    }).join('|');
+
+    const currentKey = getPartKey(row);
+
+    // Filter rows in same partition
+    const partRows = allRows.filter(r => getPartKey(r) === currentKey);
+
+    const vals = partRows.map(r => {
+      try {
+        const v = evaluateForRow(exprArg, r, allRows, colIndex);
+        return v;
+      } catch { return null; }
+    }).filter(v => v !== null && v !== undefined);
+
+    if (!vals.length) return null;
+
+    const numericVals = vals.map(v => (v instanceof Date) ? v.getTime() : (typeof v === 'number' ? v : null)).filter(v => v !== null);
+    if (!numericVals.length) return null;
+
+    const result = fn === 'minover' ? Math.min(...numericVals) : Math.max(...numericVals);
+    if (vals[0] instanceof Date) return new Date(result);
+    return result;
+  }
+
+  if (fn === 'tostring' || fn === 'tostring') {
+    return String(eval_(args[0]));
+  }
+
+  if (fn === 'parseinteger' || fn === 'parseint') {
+    return parseInt(eval_(args[0]));
+  }
+
+  if (fn === 'parsedecimal' || fn === 'parsefloat') {
+    return parseFloat(eval_(args[0]));
+  }
+
+  if (fn === 'abs') return Math.abs(eval_(args[0]));
+  if (fn === 'ceil') return Math.ceil(eval_(args[0]));
+  if (fn === 'floor') return Math.floor(eval_(args[0]));
+  if (fn === 'round') return Math.round(eval_(args[0]));
+
+  if (fn === 'isnotnull' || fn === 'isnotnull') {
+    const v = eval_(args[0]);
+    return v !== null && v !== undefined;
+  }
+  if (fn === 'isnull') {
+    const v = eval_(args[0]);
+    return v === null || v === undefined;
+  }
+
+  throw new Error(`Unsupported function: ${name}`);
+}
+
+function evaluateForRow(ast, row, allRows, colIndex) {
+  return evaluate(ast, row, allRows, colIndex);
+}
+
+// ─── Run ───────────────────────────────────────────────────────────────────────
+function runFormula() {
+  const formulaText = document.getElementById('formula').value.trim();
+  const outputBody = document.getElementById('output-body');
+
+  if (!formulaText) {
+    outputBody.innerHTML = '<div class="error-banner">No formula entered.</div>';
+    return;
+  }
+
+  // Sync table inputs to state
+  const table = document.getElementById('data-table');
+  const headerInputs = table.querySelectorAll('thead input');
+  headerInputs.forEach((inp, i) => { cols[i] = inp.value; });
+  const bodyRows = table.querySelectorAll('tbody tr');
+  bodyRows.forEach((tr, ri) => {
+    const inputs = tr.querySelectorAll('td input');
+    inputs.forEach((inp, ci) => { if (rows[ri]) rows[ri][ci] = inp.value; });
+  });
+
+  try {
+    const tokens = tokenize(formulaText);
+    const ast = parse(tokens);
+
+    const colIndex = {};
+    cols.forEach((c, i) => { colIndex[c.toLowerCase()] = i; });
+
+    const results = rows.map(row => {
+      try {
+        const val = evaluate(ast, row, rows, colIndex);
+        if (val instanceof Date) return { ok: true, value: dateToStr(val) };
+        return { ok: true, value: val === null ? 'null' : String(val) };
+      } catch(e) {
+        return { ok: false, value: e.message };
+      }
+    });
+
+    // Build output table
+    let html = '<div id="output-table-wrap"><table>';
+    // Header = original cols + result
+    html += '<thead><tr>';
+    cols.forEach(c => html += `<th><input readonly value="${escHtml(c)}"></th>`);
+    html += '<th><input readonly value="▶ result" style="color:var(--green)"></th></tr></thead>';
+    html += '<tbody>';
+    rows.forEach((row, ri) => {
+      html += '<tr>';
+      row.forEach(cell => html += `<td><input readonly value="${escHtml(String(cell ?? ''))}"></td>`);
+      const res = results[ri];
+      html += `<td class="result-cell ${res.ok ? '' : 'err'}">${escHtml(res.value)}</td>`;
+      html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+
+    outputBody.innerHTML = html;
+    document.getElementById('run-status').innerHTML = `<span class="badge">✓ ${rows.length} rows</span>`;
+
+  } catch(e) {
+    outputBody.innerHTML = `<div class="error-banner">Parse error: ${escHtml(e.message)}</div>`;
+    document.getElementById('run-status').textContent = '';
+  }
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Keyboard shortcut
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') runFormula();
+});
+
+// Init
+renderTable();
+</script>
+</body>
+</html>
