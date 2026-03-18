@@ -2,7 +2,7 @@
 
 A lightweight, browser-based tool to write, test, and debug [AWS QuickSight](https://aws.amazon.com/quicksight/) calculated field formulas against sample data — no AWS account required.
 
-Use it here: [github pages](https://aws.amazon.com/quicksight/)
+Use it here: [github pages]([https://aws.amazon.com/quicksight/](https://nicosandller.github.io/quicksight_calculated_field_tester/)
 
 ## Overview
 
